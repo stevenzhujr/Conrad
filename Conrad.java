@@ -1,4 +1,5 @@
-import java.util.Scanner;
+//region
+//imports
 import java.util.concurrent.TimeUnit;
 import java.awt.Graphics;
 import java.awt.event.WindowAdapter;
@@ -8,12 +9,23 @@ import java.awt.Graphics2D;
 import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.Color;
+import java.awt.Button;
+import java.awt.Component;
+import javax.swing.*;  
 import java.awt.*;
 import java.awt.event.*; 
-
+import java.util.Random;
+//endregion
 public class Conrad extends Frame{
+    //region
+    //Set up
+    static int counter = 0;
+    static int curr = 30;
     static boolean cont = true;
-    public Conrad() 
+    static int[][] grid = new int[10][10];
+    static Conrad c = new Conrad();
+
+    public Conrad()
     { 
         setVisible(true); 
         setSize(1000, 1000);
@@ -26,6 +38,9 @@ public class Conrad extends Frame{
             } 
         }); 
     } 
+    //endregion
+    //region
+    //Paint
     public void paint(Graphics g, int[][] grid) 
     {
         g.setColor(Color.WHITE);
@@ -41,50 +56,103 @@ public class Conrad extends Frame{
             }
         }
     }
+    //endregion
     public static void main(String[] args) {
-        Scanner scan = new Scanner(System.in);
-        int height = 10;
-        int width = 10;
-        int[][] grid = new int[height][width];
-        grid[0][0]=1;
-        grid[5][5]=1;
-        grid[4][5]=1;
-        grid[5][4]=1;
-        grid[3][2]=1;
-        grid[2][3]=1;
-        grid[3][3]=1;
-        grid[9][9]=1;
-        Conrad c = new Conrad();
-        boolean first = true;
+        //region
+        //Pause
         Button b = new Button("Pause");
-        b.setBounds(60,300,100,50);
+        b.setBounds(60,400,100,50);
         b.addActionListener(new ActionListener() {    
             public void actionPerformed (ActionEvent e) {    
                     if (cont){
                         cont = false;
+                        b.setLabel("Continue");
                     } else {
                         cont = true;
+                        b.setLabel("Pause");
                     }
-                    System.out.print(cont);
                 }    
             });
         c.add(b);
-        while (true){
-            if (cont){
-                c.paint(c.getGraphics(),grid);
-                if (!first){
-                    grid = next(grid, 10, 10);
-                } else {
-                    first = false;
-                }
+        //endregion
+        //region
+        //Scramble
+        Button scramble = new Button("Scramble");
+        scramble.setBounds(60,340,120,50);
+        scramble.addActionListener(new ActionListener() {    
+            public void actionPerformed (ActionEvent e) {    
+                    for (int i = 0; i<10; i++){
+                        for (int j = 0; j<10; j++){
+                            Random random = new Random();
+                            int temp = random.nextInt(2);
+                            grid[i][j]=temp;
+                        }
+                    }
+                }    
+            });
+        c.add(scramble);
+        //endregion
+        //region
+        //speed
+        TextField speed = new TextField("Speed (0-50)");
+        speed.setBounds(60,280,150,50);
+        speed.addActionListener(new ActionListener() {
+            public void actionPerformed (ActionEvent e){
+                String temp = speed.getText();
+                int buffer = Integer.parseInt(temp);
+                if (buffer >= 0 && buffer <= 50){
+                    curr = buffer;
+                    counter = 0;
+                } 
             }
+        });
+        c.add(speed);
+        //endregion
+        //region
+        //Load buttons
+        for (int i = 0; i<200; i+=20){
+            final int x = i;
+            for (int j=0; j<200; j+=20){
+                final int y = j;
+                JButton temp = new JButton();
+                temp.updateUI();
+                temp.setBounds(i+60,j+60,20,20);
+                temp.setOpaque(true);
+                temp.setBackground(Color.WHITE);
+                temp.addActionListener(new ActionListener() {    
+                public void actionPerformed (ActionEvent e) {    
+                        if(grid[x/20][y/20]==1){
+                            grid[x/20][y/20]=0;
+                        } else {
+                            grid[x/20][y/20]=1;
+                        }
+                    }    
+                });
+                c.add(temp);
+                }
+        }
+        //endregion
+        //region
+        //Execution
+        while (true){
+            if (counter == 51-curr){
+                if (cont){
+                    grid = next(grid, 10, 10);
+                }
+                counter = 0;
+            }
+            c.paint(c.getGraphics(),grid);
             try {
-                TimeUnit.SECONDS.sleep(1);
+                TimeUnit.MILLISECONDS.sleep(20);
             } catch (InterruptedException e){
                 System.out.print("fuck");
             }
+            counter++;
         }
+        //endregion
     }
+    //region
+    //Update grid
     public static int[][] next(int grid[][], int height, int width){
         int[][] next = new int[10][10];
         for (int i = 0; i<height; i++){
@@ -114,4 +182,5 @@ public class Conrad extends Frame{
         }
         return next;
     }
+    //endregion
  }
