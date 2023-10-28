@@ -28,7 +28,7 @@ public class Conrad extends Frame{
     public Conrad()
     { 
         setVisible(true); 
-        setSize(1000, 1000);
+        setSize(500, 500);
         setLayout(null);
         addWindowListener(new WindowAdapter() { 
             @Override
