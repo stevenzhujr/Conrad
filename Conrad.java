@@ -6,7 +6,6 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.Frame; 
 import java.awt.Graphics2D;
-import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.Color;
 import java.awt.Button;
